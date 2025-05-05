@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hospital Management System - Login</title>
+    <link rel="stylesheet" href="../static/login.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Welcome Back</h2>
+        <form id="loginForm" action="#" method="post">
+
+            <label for="cnic">CNIC:</label>
+            <input type="text" id="cnic" name="cnic" required>
+
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+
+            <label for="userType">User Type:</label>
+            <select id="userType" name="userType" required>
+                <option value="patient">Patient</option>
+                <option value="doctor">Doctor</option>
+            </select><br>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <p class="message">
+            Don't have an account? <a href="/signup">Sign up now</a>
+        </p>
+    </div>
+    <script src="../static/script.js"></script>
+</body>
+
+</html>

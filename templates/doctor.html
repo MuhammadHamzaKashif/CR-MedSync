@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - CR MedSync</title>
+    <link rel="stylesheet" href="../static/doctor.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-hand-holding-medical"></i>
+            <span>CR <span class="med-text">MedSync</span></span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="#">Acknowledgements</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="user-actions">
+<a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Sidebar with Doctor Profile -->
+            <aside class="sidebar">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <h2>Doctor Profile</h2>
+                    </div>
+                    <div class="profile-image">
+                        <img src="{{ doctor.pic }}" alt="Doctor Profile">
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="doctor-name">{{ doctor.name }}</h3>
+                        <span class="badge">{{ doctor.speciality }}</span>
+                        
+                        <div class="info-item">
+                            <span class="label">CNIC:</span>
+                            <span id="doctor-cnic">{{ doctor.cnic }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Email:</span>
+                            <span id="doctor-email">{{ doctor.email }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Contact:</span>
+                            <span id="doctor-contact">{{ doctor.contact }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Working Hours:</span>
+                            <span id="doctor-hours">{{ doctor.timing }}</span>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn btn-outline">Edit Profile</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Dashboard Area -->
+            <div class="dashboard-content">
+                <div class="tabs">
+                    <div class="tab-header">
+                        <button class="tab-btn active" data-tab="search">
+                            <i class="fas fa-search"></i> Patient Search
+                        </button>
+                        <button class="tab-btn" data-tab="reports">
+                            <i class="fas fa-file-medical"></i> Reports
+                        </button>
+                        <button class="tab-btn" data-tab="prescriptions">
+                            <i class="fas fa-pills"></i> Prescriptions
+                        </button>
+                        <button class="tab-btn" data-tab="timings">
+                            <i class="fas fa-clock"></i> Timings
+                        </button>
+                    </div>
+
+                    <!-- Patient Search Tab -->
+                    <div class="tab-content active" id="search">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Patient Search</h2>
+                                <p>Search for a patient by CNIC</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="search-container">
+                                    <input type="text" id="patient-cnic-search" placeholder="Enter patient CNIC (e.g., 37405-1234567-1)">
+                                    <button class="btn" id="search-btn">Search</button>
+                                </div>
+                                
+                                <div id="patient-results" class="hidden">
+                                    <div class="patient-header">
+                                        <div class="patient-avatar">
+                                            <span id="patient-avatar"></span>
+                                        </div>
+                                        <div class="patient-basic-info">
+                                            <h3 id="patient-name">Muhammad Ali</h3>
+                                            <p id="patient-cnic-display">CNIC: 37405-1234567-1</p>
+                                        </div>
+                                        <span class="badge" id="patient-gender-age">Male, 45 years</span>
+                                    </div>
+                                    
+                                    <div class="patient-details">
+                                        <div class="detail-item">
+                                            <p class="label">Contact</p>
+                                            <p id="patient-contact">+92 321 1234567</p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="label">Last Visit</p>
+                                            <p id="patient-last-visit">15 May 2023</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="previous-reports">
+                                        <h4>Previous Reports</h4>
+                                        <div class="reports-list" id="reports-list">
+                                            <!-- Reports will be added here by JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="no-patient-found" class="hidden">
+                                    <div class="no-results">
+                                        <p>No patient found with the provided CNIC.</p>
+                                        <button class="btn btn-outline">Register New Patient</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Patient Reports Tab -->
+                    <div class="tab-content" id="reports">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Create Patient Report</h2>
+                                <p>Create a new medical report for a patient</p>
+                            </div>
+                            <div class="card-body">
+
+                                <form id="report-form" action="/doctor/save_report" method="POST">
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="report-doctor-cnic">Doctor CNIC</label>
+                                            <input type="text" id="report-doctor-cnic" name="dcnic" placeholder="Enter doctor CNIC">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="report-patient-cnic">Patient CNIC</label>
+                                            <input type="text" id="report-patient-cnic" name="pcnic" placeholder="Enter patient CNIC">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="report-date">Report Date</label>
+                                            <input type="date" id="report-date" name="rdate">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="symptoms">Symptoms</label>
+                                        <textarea id="symptoms" name = "symptoms" placeholder="Describe patient symptoms"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="disease">Disease</label>
+                                        <textarea id="disease" name = "disease" placeholder="Describe patient disease"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="diagnosis">Diagnosis</label>
+                                        <textarea id="diagnosis" name="diagnosis" placeholder="Enter diagnosis"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="tests">Recommended Tests</label>
+                                        <textarea id="tests" name="tests" placeholder="Recommend any tests if required"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="notes">Additional Notes</label>
+                                        <textarea id="notes" name="note" placeholder="Any additional notes"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-outline">Cancel</button>
+                                        <button id="reportBtn" type="submit" class="btn">Save Report</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prescriptions Tab -->
+                    <div class="tab-content" id="prescriptions">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Create Prescription</h2>
+                                <p>Prescribe medicine for a patient</p>
+                            </div>
+                            <div class="card-body">
+                                <form id="prescription-form" action="/doctor/save_prescription" method="POST">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="report_id">Report number</label>
+                                            <input type="int" id="report_id" name="rId">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="prescription-patient">Patient CNIC</label>
+                                            <input type="text" id="prescription-patient" name="pcnic" placeholder="Enter patient CNIC">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="prescription-date">Prescription Date</label>
+                                            <input type="date" id="prescription-date" name="pdate">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Medicines</label>
+                                        <div id="medicines-container">
+                                            <div class="medicine-row">
+                                                <div class="medicine-name">
+                                                    <label>Medicine Name</label>
+                                                    <input type="text" name="mname" placeholder="Medicine name">
+                                                </div>
+                                                <div class="medicine-dosage">
+                                                    <label>Dosage</label>
+                                                    <input type="text" name="dosage" placeholder="Dosage">
+                                                </div>
+                                                <div class="medicine-frequency">
+                                                    <label>Frequency</label>
+                                                    <select name="freq">
+                                                        <option value="">Select</option>
+                                                        <option value="once">Once daily</option>
+                                                        <option value="twice">Twice daily</option>
+                                                        <option value="thrice">Thrice daily</option>
+                                                        <option value="four">Four times daily</option>
+                                                    </select>
+                                                </div>
+                                                <div class="medicine-duration">
+                                                    <label>Duration</label>
+                                                    <input type="text" name="dur" placeholder="Days">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-small btn-outline" id="add-medicine">+ Add Medicine</button>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-outline">Cancel</button>
+                                        <button type="submit" class="btn" id="prescribeBtn">Save Prescription</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timings Tab -->
+                    <div class="tab-content" id="timings">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Manage Working Hours</h2>
+                                <p>Update your availability and working hours</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="timings-container">
+                                    <div class="weekly-schedule">
+                                        <h3>Weekly Schedule</h3>
+                                        <div class="schedule-list">
+                                            <div class="schedule-item">
+                                                <label>Monday</label>
+                                                <select class="day-status">
+                                                    <option value="working">Working</option>
+                                                    <option value="off">Day Off</option>
+                                                </select>
+                                                <div class="time-range">
+                                                    <select class="time-from">
+                                                        <option value="8">8:00</option>
+                                                        <option value="9" selected>9:00</option>
+                                                        <option value="10">10:00</option>
+                                                        <option value="11">11:00</option>
+                                                        <option value="12">12:00</option>
+                                                    </select>
+                                                    <span>-</span>
+                                                    <select class="time-to">
+                                                        <option value="14">14:00</option>
+                                                        <option value="15">15:00</option>
+                                                        <option value="16">16:00</option>
+                                                        <option value="17" selected>17:00</option>
+                                                        <option value="18">18:00</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="schedule-item">
+                                                <label>Tuesday</label>
+                                                <select class="day-status">
+                                                    <option value="working">Working</option>
+                                                    <option value="off">Day Off</option>
+                                                </select>
+                                                <div class="time-range">
+                                                    <select class="time-from">
+                                                        <option value="8">8:00</option>
+                                                        <option value="9" selected>9:00</option>
+                                                        <option value="10">10:00</option>
+                                                        <option value="11">11:00</option>
+                                                        <option value="12">12:00</option>
+                                                    </select>
+                                                    <span>-</span>
+                                                    <select class="time-to">
+                                                        <option value="14">14:00</option>
+                                                        <option value="15">15:00</option>
+                                                        <option value="16">16:00</option>
+                                                        <option value="17" selected>17:00</option>
+                                                        <option value="18">18:00</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="schedule-item">
+                                                <label>Wednesday</label>
+                                                <select class="day-status">
+                                                    <option value="working">Working</option>
+                                                    <option value="off">Day Off</option>
+                                                </select>
+                                                <div class="time-range">
+                                                    <select class="time-from">
+                                                        <option value="8">8:00</option>
+                                                        <option value="9" selected>9:00</option>
+                                                        <option value="10">10:00</option>
+                                                        <option value="11">11:00</option>
+                                                        <option value="12">12:00</option>
+                                                    </select>
+                                                    <span>-</span>
+                                                    <select class="time-to">
+                                                        <option value="14">14:00</option>
+                                                        <option value="15">15:00</option>
+                                                        <option value="16">16:00</option>
+                                                        <option value="17" selected>17:00</option>
+                                                        <option value="18">18:00</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="schedule-item">
+                                                <label>Thursday</label>
+                                                <select class="day-status">
+                                                    <option value="working">Working</option>
+                                                    <option value="off">Day Off</option>
+                                                </select>
+                                                <div class="time-range">
+                                                    <select class="time-from">
+                                                        <option value="8">8:00</option>
+                                                        <option value="9" selected>9:00</option>
+                                                        <option value="10">10:00</option>
+                                                        <option value="11">11:00</option>
+                                                        <option value="12">12:00</option>
+                                                    </select>
+                                                    <span>-</span>
+                                                    <select class="time-to">
+                                                        <option value="14">14:00</option>
+                                                        <option value="15">15:00</option>
+                                                        <option value="16">16:00</option>
+                                                        <option value="17" selected>17:00</option>
+                                                        <option value="18">18:00</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="schedule-item">
+                                                <label>Friday</label>
+                                                <select class="day-status">
+                                                    <option value="working">Working</option>
+                                                    <option value="off">Day Off</option>
+                                                </select>
+                                                <div class="time-range">
+                                                    <select class="time-from">
+                                                        <option value="8">8:00</option>
+                                                        <option value="9" selected>9:00</option>
+                                                        <option value="10">10:00</option>
+                                                        <option value="11">11:00</option>
+                                                        <option value="12">12:00</option>
+                                                    </select>
+                                                    <span>-</span>
+                                                    <select class="time-to">
+                                                        <option value="14">14:00</option>
+                                                        <option value="15">15:00</option>
+                                                        <option value="16">16:00</option>
+                                                        <option value="17" selected>17:00</option>
+                                                        <option value="18">18:00</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="schedule-item">
+                                                <label>Saturday</label>
+                                                <select class="day-status">
+                                                    <option value="working">Working</option>
+                                                    <option value="off" selected>Day Off</option>
+                                                </select>
+                                                <div class="time-range">
+                                                    <select class="time-from" disabled>
+                                                        <option value="8">8:00</option>
+                                                        <option value="9">9:00</option>
+                                                        <option value="10">10:00</option>
+                                                        <option value="11">11:00</option>
+                                                        <option value="12">12:00</option>
+                                                    </select>
+                                                    <span>-</span>
+                                                    <select class="time-to" disabled>
+                                                        <option value="14">14:00</option>
+                                                        <option value="15">15:00</option>
+                                                        <option value="16">16:00</option>
+                                                        <option value="17">17:00</option>
+                                                        <option value="18">18:00</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="schedule-item">
+                                                <label>Sunday</label>
+                                                <select class="day-status">
+                                                    <option value="working">Working</option>
+                                                    <option value="off" selected>Day Off</option>
+                                                </select>
+                                                <div class="time-range">
+                                                    <select class="time-from" disabled>
+                                                        <option value="8">8:00</option>
+                                                        <option value="9">9:00</option>
+                                                        <option value="10">10:00</option>
+                                                        <option value="11">11:00</option>
+                                                        <option value="12">12:00</option>
+                                                    </select>
+                                                    <span>-</span>
+                                                    <select class="time-to" disabled>
+                                                        <option value="14">14:00</option>
+                                                        <option value="15">15:00</option>
+                                                        <option value="16">16:00</option>
+                                                        <option value="17">17:00</option>
+                                                        <option value="18">18:00</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="special-days">
+                                        <h3>Special Days Off</h3>
+                                        <div class="calendar-container" id="calendar">
+                                            <!-- Calendar will be generated by JavaScript -->
+                                        </div>
+                                        
+                                        <div class="selected-days">
+                                            <h3>Selected Days Off</h3>
+                                            <div class="days-off-list" id="days-off-list">
+                                                <span class="day-off-badge">
+                                                    <i class="fas fa-calendar"></i>
+                                                    June 15, 2023
+                                                    <button class="remove-day">×</button>
+                                                </span>
+                                                <span class="day-off-badge">
+                                                    <i class="fas fa-calendar"></i>
+                                                    July 4, 2023
+                                                    <button class="remove-day">×</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions right">
+                                    <button class="btn">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; CR MedSync 2025. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../static/doctor.js"></script>
+</body>
+</html>
+

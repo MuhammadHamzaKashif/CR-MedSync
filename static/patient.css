@@ -1,0 +1,1045 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  :root {
+    /* Colors from the provided homepage image */
+        --primary: rgb(83, 200, 155);
+        --primary-dark: rgb(71, 180, 138);
+        --dark-bg: #0e1c2f;
+        --dark-bg-light: #1a2a3a;
+        --light-text: #ffffff;
+        --muted-text: #a0aec0;
+        --border-color: #2d3748;
+        --card-bg: #ffffff;
+        --card-text: #1a202c;
+        --body-bg: #e9f5ff;
+        --success: #48bb78;
+        --warning: #ed8936;
+        --danger: #e53e3e;
+    
+    
+  }
+  
+  body {
+    background-color: var(--dark-bg);
+    color: var(--dark-bg);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+  
+  /* Header Styles */
+  header {
+    background-color: var(--primary);
+    padding: 0;
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 30px;
+    margin-top: 13px;
+  }
+  
+  .logo i {
+    margin-right: 5px;
+    font-size: xx-large;
+    margin-top: inherit;
+  }
+  
+  nav ul {
+    display: flex;
+    list-style: none;
+  }
+  
+  nav ul li {
+    margin: 0 15px;
+  }
+  
+  nav ul li a {
+    color: var(--dark-bg);
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.3s;
+    margin: 20px;
+    padding: 20px;
+  }
+  
+  nav ul li a:hover {
+    color: var(--light-text);
+  }
+  
+  .user-actions {
+    display: flex;
+    align-items: center;
+  }
+  
+  .btn-logout {
+    background-color: var(--dark-bg);
+    color: var(--light-text);
+    padding: 8px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: background-color 0.3s;
+    margin: 20px;
+  }
+  
+  .btn-logout:hover {
+    background-color: rgba(17, 37, 61, 0.8);
+  }
+  
+  /* Mobile Menu Button */
+  .mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--dark-bg);
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  /* Mobile Menu */
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 100px;
+    left: 0;
+    right: 0;
+    background-color: var(--primary);
+    z-index: 999;
+    padding: 1rem;
+  }
+  
+  .mobile-menu.active {
+    display: block;
+  }
+  
+  .mobile-menu ul {
+    list-style: none;
+  }
+  
+  .mobile-menu ul li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .mobile-menu ul li a {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: var(--dark-bg);
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s;
+  }
+  
+  .mobile-menu ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .mobile-logout {
+    background-color: var(--dark-bg);
+    color: var(--light-text) !important;
+    border-radius: 4px;
+  }
+  
+  /* Main Content Styles */
+  main {
+    padding: 130px 0 30px;
+    flex: 1;
+  }
+  
+  .container {
+    display: flex;
+    gap: 30px;
+  }
+  
+  /* Sidebar Styles */
+  .sidebar {
+    width: 300px;
+    flex-shrink: 0;
+  }
+  
+  .profile-card {
+    background-color: var(--dark-bg-light);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .profile-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--light-text);
+  }
+  
+  .profile-image {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .profile-image img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary);
+  }
+  
+  .profile-info {
+    padding: 0 20px 20px;
+  }
+  
+  .profile-info h3 {
+    text-align: center;
+    margin-bottom: 5px;
+    font-size: 20px;
+    color: var(--light-text);
+  }
+  
+  .badge {
+    display: inline-block;
+    background-color: var(--primary);
+    color: var(--dark-bg);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 15px;
+  }
+  
+  .profile-info .badge {
+    display: block;
+    text-align: center;
+    width: fit-content;
+    margin: 0 auto 15px;
+  }
+  
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--light-text);
+  }
+  
+  .label {
+    color: var(--muted-text);
+  }
+  
+  .profile-actions {
+    padding: 15px 20px;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  /* Dashboard Content Styles */
+  .dashboard-content {
+    flex: 1;
+  }
+  
+  .tabs {
+    background-color: var(--dark-bg-light);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tab-header {
+    display: flex;
+    background-color: var(--dark-bg);
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .tab-btn {
+    flex: 1;
+    padding: 15px;
+    background: none;
+    border: none;
+    color: var(--light-text);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .tab-btn i {
+    margin-right: 8px;
+  }
+  
+  .tab-btn:hover {
+    background-color: rgba(83, 200, 155, 0.1);
+  }
+  
+  .tab-btn.active {
+    background-color: var(--primary);
+    color: var(--dark-bg);
+  }
+  
+  .tab-content {
+    display: none;
+    padding: 20px;
+  }
+  
+  .tab-content.active {
+    display: block;
+  }
+  
+  /* Card Styles */
+  .card {
+    background-color: var(--dark-bg-light);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .card-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .card-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--light-text);
+  }
+  
+  .card-header p {
+    color: var(--muted-text);
+    font-size: 14px;
+  }
+  
+  .card-body {
+    padding: 20px;
+    color: var(--light-text);
+  }
+  
+  /* Button Styles */
+  .btn {
+    background-color: var(--primary);
+    color: var(--dark-bg);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .btn:hover {
+    background-color: var(--primary-dark);
+  }
+  
+  .btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+  }
+  
+  .btn-outline:hover {
+    background-color: rgba(83, 200, 155, 0.1);
+  }
+  
+  .btn-small {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  
+  .delete-btn {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+  
+  .delete-btn:hover {
+    background-color: rgba(229, 62, 62, 0.1);
+  }
+  
+  .cancel-btn {
+    border-color: var(--warning);
+    color: var(--warning);
+  }
+  
+  .cancel-btn:hover {
+    background-color: rgba(237, 137, 54, 0.1);
+  }
+  
+  /* Form Styles */
+  .form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+    flex: 1;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--light-text);
+  }
+  
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: var(--dark-bg);
+    color: var(--light-text);
+    font-size: 14px;
+  }
+  
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  
+  textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  /* Search and Filter Styles */
+  .search-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .search-container input,
+  .search-container select {
+    flex: 1;
+  }
+  
+  .filter-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .filter-group {
+    flex: 1;
+  }
+  
+  /* Doctor List Styles */
+  .doctors-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+  
+  .doctor-card {
+    background-color: var(--dark-bg);
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .doctor-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .doctor-info img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+  }
+  
+  .doctor-info h3 {
+    margin-bottom: 5px;
+    font-size: 16px;
+  }
+  
+  .speciality {
+    color: var(--muted-text);
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .rating {
+    color: #f59e0b;
+    font-size: 14px;
+  }
+  
+  .rating span {
+    color: var(--light-text);
+    margin-left: 5px;
+  }
+  
+  .doctor-availability {
+    text-align: right;
+  }
+  
+  .doctor-availability p {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--muted-text);
+  }
+  
+  /* Appointment Styles */
+  .upcoming-appointments {
+    margin-top: 30px;
+  }
+  
+  .upcoming-appointments h3 {
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: var(--light-text);
+  }
+  
+  .appointments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .appointment-item {
+    background-color: var(--dark-bg);
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .appointment-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+  }
+  
+  .date-box {
+    background-color: var(--primary);
+    color: var(--dark-bg);
+    border-radius: 8px;
+    padding: 5px 10px;
+    text-align: center;
+    margin-bottom: 5px;
+    width: 60px;
+  }
+  
+  .month {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .day {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  
+  .time {
+    font-size: 14px;
+    color: var(--muted-text);
+  }
+  
+  .appointment-details {
+    flex: 1;
+  }
+  
+  .appointment-details h4 {
+    margin-bottom: 5px;
+    font-size: 16px;
+  }
+  
+  .appointment-details p {
+    color: var(--muted-text);
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .reason {
+    font-style: italic;
+  }
+  
+  .appointment-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal.active {
+    display: flex;
+  }
+  
+  .modal-content {
+    background-color: var(--dark-bg-light);
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+  }
+  
+  .close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--muted-text);
+  }
+  
+  .close-modal:hover {
+    color: var(--light-text);
+  }
+  
+  .modal-content h2 {
+    margin-bottom: 20px;
+    color: var(--light-text);
+  }
+  
+  /* Medical Records Styles */
+  .medical-records {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .record-item {
+    background-color: var(--dark-bg);
+    border-radius: 8px;
+    padding: 15px;
+  }
+  
+  .record-date {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--muted-text);
+    font-size: 14px;
+  }
+  
+  .record-details h4 {
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  
+  .details-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .detail {
+    flex: 1;
+  }
+  
+  .detail .label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 12px;
+  }
+  
+  .diagnosis,
+  .treatment {
+    margin-bottom: 10px;
+  }
+  
+  .diagnosis .label,
+  .treatment .label {
+    display: inline;
+    margin-right: 5px;
+  }
+  
+  .record-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  /* Reviews Styles */
+  .reviews-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .your-reviews h3,
+  .submit-review h3 {
+    margin-bottom: 15px;
+    font-size: 16px;
+  }
+  
+  .review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .review-item {
+    background-color: var(--dark-bg);
+    border-radius: 8px;
+    padding: 15px;
+  }
+  
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .doctor-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .doctor-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .doctor-info h4 {
+    margin-bottom: 5px;
+    font-size: 16px;
+  }
+  
+  .doctor-info p {
+    color: var(--muted-text);
+    font-size: 14px;
+  }
+  
+  .review-date {
+    color: var(--muted-text);
+    font-size: 14px;
+  }
+  
+  .review-rating {
+    margin-bottom: 10px;
+  }
+  
+  .review-content {
+    margin-bottom: 15px;
+    line-height: 1.6;
+  }
+  
+  .review-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .star-rating {
+    display: flex;
+    gap: 5px;
+    font-size: 24px;
+    color: #f59e0b;
+    cursor: pointer;
+  }
+  
+  /* Prescription Styles */
+  .prescriptions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .prescription-item {
+    background-color: var(--dark-bg);
+    border-radius: 8px;
+    padding: 15px;
+    border-left: 4px solid var(--primary);
+  }
+  
+  .prescription-item.active {
+    border-left-color: var(--success);
+  }
+  
+  .prescription-item.completed {
+    border-left-color: var(--muted-text);
+  }
+  
+  .prescription-item.expired {
+    border-left-color: var(--danger);
+  }
+  
+  .prescription-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .prescription-info h4 {
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  
+  .prescription-meta {
+    display: flex;
+    gap: 15px;
+    color: var(--muted-text);
+    font-size: 14px;
+  }
+  
+  .prescription-meta i {
+    margin-right: 5px;
+  }
+  
+  .status {
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+  
+  .status.active {
+    background-color: var(--success);
+    color: white;
+  }
+  
+  .status.completed {
+    background-color: var(--muted-text);
+    color: white;
+  }
+  
+  .status.expired {
+    background-color: var(--danger);
+    color: white;
+  }
+  
+  .prescription-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .prescription-details {
+    margin-top: 15px;
+  }
+  
+  .medicine-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .medicine-item {
+    display: grid;
+    grid-template-columns: 3fr 1fr 2fr 1fr;
+    gap: 10px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+  
+  .prescription-notes {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    font-size: 14px;
+  }
+  
+  /* Footer Styles */
+  footer {
+    background-color: var(--primary);
+    color: var(--dark-bg);
+    padding: 15px 0;
+    text-align: center;
+    font-weight: 600;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 992px) {
+    .container {
+      flex-direction: column;
+    }
+  
+    .sidebar {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+  
+    .details-row {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .medicine-item {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    header {
+      padding: 0 15px;
+      height: 80px;
+    }
+  
+    .logo {
+      margin-left: 0;
+    }
+  
+    nav {
+      display: none;
+    }
+  
+    .user-actions {
+      display: none;
+    }
+  
+    .mobile-menu-btn {
+      display: block;
+    }
+  
+    .mobile-menu {
+      top: 80px;
+    }
+  
+    main {
+      padding-top: 100px;
+    }
+  
+    .doctor-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .doctor-availability {
+      width: 100%;
+      text-align: left;
+      margin-top: 15px;
+    }
+  
+    .appointment-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .appointment-date {
+      flex-direction: row;
+      gap: 10px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  
+    .appointment-actions {
+      width: 100%;
+      margin-top: 10px;
+    }
+  
+    .prescription-header {
+      flex-direction: column;
+    }
+  
+    .prescription-actions {
+      margin-top: 10px;
+    }
+  
+    .filter-container {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .tab-btn {
+      font-size: 0;
+      padding: 10px;
+    }
+  
+    .tab-btn i {
+      margin-right: 0;
+      font-size: 18px;
+    }
+  
+    .search-container {
+      flex-direction: column;
+    }
+  
+    .form-row {
+      flex-direction: column;
+      gap: 15px;
+    }
+  
+    .form-actions {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .form-actions button {
+      width: 100%;
+    }
+  
+    .star-rating {
+      justify-content: center;
+    }
+  }
+  

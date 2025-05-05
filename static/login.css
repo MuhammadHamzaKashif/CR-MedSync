@@ -1,0 +1,99 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e9f5ff;
+    margin: 0;
+    padding: 0;
+    background-image: url('img/login.jpg');
+    background-size: cover; 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed
+}
+
+.container {
+    width: 515px;
+    height: 360px;
+    /* margin: 100px auto; */
+    position: relative;
+    background-color: rgb(83, 200, 155);
+    padding: 60px;
+    border-radius: 25px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    top: 125px;
+    left: 280px;
+    overflow-y: auto;
+}
+.container::-webkit-scrollbar {
+    width: 12px;
+}
+
+.container::-webkit-scrollbar-thumb {
+    background-color: #007acc;
+    border-radius: 6px;
+}
+
+.container::-webkit-scrollbar-track {
+    background-color: #e9f5ff;
+    border-radius: 6px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    color: #555;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+select{
+    width: 104%;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: #007acc;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #005fa3;
+    cursor: pointer;
+}
+
+.message {
+    margin-top: 20px;
+    text-align: center;
+    color: #555;
+}
+
+.message a {
+    color: #007acc;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.message a:hover {
+    text-decoration: underline;
+}
+.fa-solid, .fas {
+    font-weight: 900;
+    font-size: xx-large;
+    margin-top: inherit;
+    margin-right: 5px;
+}

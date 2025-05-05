@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard - CR MedSync</title>
+    <link rel="stylesheet" href="/static/patient.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-hand-holding-medical"></i>
+            <span style="color: var(--dark-bg)">CR</span>
+            <span style="color: var(--light-text)">MedSync</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#">Acknowledgements</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="user-actions">
+            <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+        </div>
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#">Acknowledgements</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#" class="mobile-logout">Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Sidebar with Patient Profile -->
+            <aside class="sidebar">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <h2>Patient Profile</h2>
+                    </div>
+                    <div class="profile-image">
+                        <img src="{{patient.pic}}" alt="Patient Profile">
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="patient-name">{{patient.name}}</h3>
+                        <span class="badge">Active Patient</span>
+                        
+                        <div class="info-item">
+                            <span class="label">CNIC:</span>
+                            <span id="patient-cnic">{{patient.cnic}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Email:</span>
+                            <span id="patient-email">{{patient.email}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Contact:</span>
+                            <span id="patient-contact">{{patient.contact}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Age/Gender:</span>
+                            <span id="patient-age-gender">{{patient.dob}} / {{patient.gender}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Blood Group:</span>
+                            <span id="patient-blood">B+</span>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn btn-outline">Edit Profile</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Dashboard Area -->
+            <div class="dashboard-content">
+                <div class="tabs">
+                    <div class="tab-header">
+                        <button class="tab-btn active" data-tab="appointments">
+                            <i class="fas fa-calendar-check"></i> Appointments
+                        </button>
+                        <button class="tab-btn" data-tab="medical-history">
+                            <i class="fas fa-file-medical"></i> Medical History
+                        </button>
+                        <button class="tab-btn" data-tab="reviews">
+                            <i class="fas fa-star"></i> Doctor Reviews
+                        </button>
+                        <button class="tab-btn" data-tab="prescriptions">
+                            <i class="fas fa-prescription"></i> Prescriptions
+                        </button>
+                    </div>
+
+                    <!-- Appointments Tab -->
+                    <div class="tab-content active" id="appointments">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Book an Appointment</h2>
+                                <p>Find a doctor and book your appointment</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="search-container">
+                                    <select id="specialty-filter">
+                                        <option value="">All Specialties</option>
+                                        <option value="cardiologist">Cardiologist</option>
+                                        <option value="dermatologist">Dermatologist</option>
+                                        <option value="neurologist">Neurologist</option>
+                                        <option value="orthopedic">Orthopedic</option>
+                                        <option value="pediatrician">Pediatrician</option>
+                                    </select>
+                                    <input type="text" id="doctor-search" placeholder="Search doctor by name">
+                                    <button class="btn" id="search-btn">Search</button>
+                                </div>
+                                
+                                <div class="doctors-list" id="doctors-list">
+                                    <!-- <div class="doctor-card">
+                                        <div class="doctor-info">
+                                            <img src="https://via.placeholder.com/80" alt="Dr. Sarah Ahmed">
+                                            <div>
+                                                <h3>Dr. Sarah Ahmed</h3>
+                                                <p class="specialty">Cardiologist</p>
+                                                <div class="rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star-half-alt"></i>
+                                                    <span>(4.5)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="doctor-availability">
+                                            <p>Available: Mon-Fri, 9:00 AM - 5:00 PM</p>
+                                            <button class="btn btn-small book-appointment" data-doctor="Dr. Sarah Ahmed">Book Appointment</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="doctor-card">
+                                        <div class="doctor-info">
+                                            <img src="https://via.placeholder.com/80" alt="Dr. Imran Khan">
+                                            <div>
+                                                <h3>Dr. Imran Khan</h3>
+                                                <p class="specialty">Neurologist</p>
+                                                <div class="rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="far fa-star"></i>
+                                                    <span>(4.0)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="doctor-availability">
+                                            <p>Available: Tue-Sat, 10:00 AM - 6:00 PM</p>
+                                            <button class="btn btn-small book-appointment" data-doctor="Dr. Imran Khan">Book Appointment</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="doctor-card">
+                                        <div class="doctor-info">
+                                            <img src="https://via.placeholder.com/80" alt="Dr. Ayesha Malik">
+                                            <div>
+                                                <h3>Dr. Ayesha Malik</h3>
+                                                <p class="specialty">Dermatologist</p>
+                                                <div class="rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <span>(5.0)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="doctor-availability">
+                                            <p>Available: Mon-Wed, 9:00 AM - 3:00 PM</p>
+                                            <button class="btn btn-small book-appointment" data-doctor="Dr. Ayesha Malik">Book Appointment</button>
+                                        </div>
+                                    </div> -->
+                                </div>
+                                
+                                <!-- Appointment Booking Modal -->
+                                <div id="appointment-modal" class="modal">
+                                    <div class="modal-content">
+                                        <span class="close-modal">&times;</span>
+                                        <h2>Book Appointment with <span id="modal-doctor-name"></span></h2>
+                                        <form id="appointment-form" action="/patient/book_appointment" method="post">
+                                            <div class="form-group">
+                                                <label for="appointment-patient-cnic">Patient Cnic</label>
+                                                <input type="text" id="pcnic" name="pcnic" value="{{patient.cnic}}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="appointment-doctor-name">Doctor Name</label>
+                                                <input type="text" id="dname" name="dname" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="appointment-date">Select Date</label>
+                                                <input type="date" id="appointment-date" name="date" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="appointment-time">Select Time</label>
+                                                <select id="appointment-time" name="time" required>
+                                                    <option value="">Select a time slot</option>
+                                                    <option value="09:00">09:00 AM</option>
+                                                    <option value="10:00">10:00 AM</option>
+                                                    <option value="11:00">11:00 AM</option>
+                                                    <option value="12:00">12:00 PM</option>
+                                                    <option value="13:00">01:00 PM</option>
+                                                    <option value="14:00">02:00 PM</option>
+                                                    <option value="15:00">03:00 PM</option>
+                                                    <option value="16:00">04:00 PM</option>
+                                                    <option value="17:00">05:00 PM</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="appointment-reason">Reason for Visit</label>
+                                                <textarea id="appointment-reason" placeholder="Briefly describe your symptoms or reason for visit" required></textarea>
+                                            </div>
+                                            <div class="form-actions">
+                                                <button type="button" class="btn btn-outline" id="cancel-appointment">Cancel</button>
+                                                <button type="submit" class="btn">Confirm Appointment</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                
+                                <div class="upcoming-appointments">
+                                    <h3>Your Upcoming Appointments</h3>
+                                    <div class="appointments-list" id="upcoming-appointments-list">
+                                        <div class="appointment-item">
+                                            <div class="appointment-date">
+                                                <div class="date-box">
+                                                    <span class="month">Jun</span>
+                                                    <span class="day">15</span>
+                                                </div>
+                                                <span class="time">10:00 AM</span>
+                                            </div>
+                                            <div class="appointment-details">
+                                                <h4>Dr. Sarah Ahmed</h4>
+                                                <p>Cardiologist</p>
+                                                <p class="reason">Reason: Regular checkup for hypertension</p>
+                                            </div>
+                                            <div class="appointment-actions">
+                                                <button class="btn btn-small btn-outline">Reschedule</button>
+                                                <button class="btn btn-small btn-outline cancel-btn">Cancel</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="appointment-item">
+                                            <div class="appointment-date">
+                                                <div class="date-box">
+                                                    <span class="month">Jul</span>
+                                                    <span class="day">02</span>
+                                                </div>
+                                                <span class="time">02:30 PM</span>
+                                            </div>
+                                            <div class="appointment-details">
+                                                <h4>Dr. Ayesha Malik</h4>
+                                                <p>Dermatologist</p>
+                                                <p class="reason">Reason: Skin rash consultation</p>
+                                            </div>
+                                            <div class="appointment-actions">
+                                                <button class="btn btn-small btn-outline">Reschedule</button>
+                                                <button class="btn btn-small btn-outline cancel-btn">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medical History Tab -->
+                    <div class="tab-content" id="medical-history">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Medical History</h2>
+                                <p>View your medical reports and history</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="filter-container">
+                                    <div class="filter-group">
+                                        <label for="date-filter">Filter by Date</label>
+                                        <select id="date-filter">
+                                            <option value="all">All Time</option>
+                                            <option value="month">Last Month</option>
+                                            <option value="6months">Last 6 Months</option>
+                                            <option value="year">Last Year</option>
+                                        </select>
+                                    </div>
+                                    <div class="filter-group">
+                                        <label for="doctor-filter">Filter by Doctor</label>
+                                        <select id="doctor-filter">
+                                            <option value="all">All Doctors</option>
+                                            <option value="Dr. Sarah Ahmed">Dr. Sarah Ahmed</option>
+                                            <option value="Dr. Imran Khan">Dr. Imran Khan</option>
+                                            <option value="Dr. Ayesha Malik">Dr. Ayesha Malik</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="medical-records">
+                                    <div class="record-item">
+                                        <div class="record-date">
+                                            <span class="date">15 May 2023</span>
+                                            <span class="doctor">Dr. Sarah Ahmed</span>
+                                        </div>
+                                        <div class="record-details">
+                                            <h4>Hypertension Checkup</h4>
+                                            <div class="details-row">
+                                                <div class="detail">
+                                                    <span class="label">Blood Pressure</span>
+                                                    <span>140/90 mmHg</span>
+                                                </div>
+                                                <div class="detail">
+                                                    <span class="label">Heart Rate</span>
+                                                    <span>78 bpm</span>
+                                                </div>
+                                                <div class="detail">
+                                                    <span class="label">Weight</span>
+                                                    <span>82 kg</span>
+                                                </div>
+                                            </div>
+                                            <div class="diagnosis">
+                                                <span class="label">Diagnosis:</span>
+                                                <span>Hypertension (Stage 1)</span>
+                                            </div>
+                                            <div class="treatment">
+                                                <span class="label">Treatment:</span>
+                                                <span>Prescribed Amlodipine 5mg daily</span>
+                                            </div>
+                                        </div>
+                                        <div class="record-actions">
+                                            <button class="btn btn-small">View Full Report</button>
+                                            <button class="btn btn-small btn-outline">Download PDF</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="record-item">
+                                        <div class="record-date">
+                                            <span class="date">10 April 2023</span>
+                                            <span class="doctor">Dr. Sarah Ahmed</span>
+                                        </div>
+                                        <div class="record-details">
+                                            <h4>Chest Pain Investigation</h4>
+                                            <div class="details-row">
+                                                <div class="detail">
+                                                    <span class="label">ECG</span>
+                                                    <span>Normal</span>
+                                                </div>
+                                                <div class="detail">
+                                                    <span class="label">Blood Tests</span>
+                                                    <span>Normal</span>
+                                                </div>
+                                                <div class="detail">
+                                                    <span class="label">Blood Pressure</span>
+                                                    <span>145/95 mmHg</span>
+                                                </div>
+                                            </div>
+                                            <div class="diagnosis">
+                                                <span class="label">Diagnosis:</span>
+                                                <span>Stress-induced chest pain, Hypertension</span>
+                                            </div>
+                                            <div class="treatment">
+                                                <span class="label">Treatment:</span>
+                                                <span>Stress management techniques, Diet modification</span>
+                                            </div>
+                                        </div>
+                                        <div class="record-actions">
+                                            <button class="btn btn-small">View Full Report</button>
+                                            <button class="btn btn-small btn-outline">Download PDF</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="record-item">
+                                        <div class="record-date">
+                                            <span class="date">5 March 2023</span>
+                                            <span class="doctor">Dr. Ayesha Malik</span>
+                                        </div>
+                                        <div class="record-details">
+                                            <h4>Skin Rash Examination</h4>
+                                            <div class="details-row">
+                                                <div class="detail">
+                                                    <span class="label">Affected Area</span>
+                                                    <span>Forearms, Neck</span>
+                                                </div>
+                                                <div class="detail">
+                                                    <span class="label">Duration</span>
+                                                    <span>2 weeks</span>
+                                                </div>
+                                                <div class="detail">
+                                                    <span class="label">Allergy Test</span>
+                                                    <span>Positive (Pollen)</span>
+                                                </div>
+                                            </div>
+                                            <div class="diagnosis">
+                                                <span class="label">Diagnosis:</span>
+                                                <span>Contact Dermatitis</span>
+                                            </div>
+                                            <div class="treatment">
+                                                <span class="label">Treatment:</span>
+                                                <span>Topical corticosteroid cream, Antihistamine</span>
+                                            </div>
+                                        </div>
+                                        <div class="record-actions">
+                                            <button class="btn btn-small">View Full Report</button>
+                                            <button class="btn btn-small btn-outline">Download PDF</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Doctor Reviews Tab -->
+                    <div class="tab-content" id="reviews">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Doctor Reviews</h2>
+                                <p>Submit and view your reviews for doctors</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="reviews-container">
+                                    <div class="your-reviews">
+                                        <h3>Your Reviews</h3>
+                                        <div class="review-list">
+                                            <div class="review-item">
+                                                <div class="review-header">
+                                                    <div class="doctor-info">
+                                                        <img src="https://via.placeholder.com/50" alt="Dr. Sarah Ahmed">
+                                                        <div>
+                                                            <h4>Dr. Sarah Ahmed</h4>
+                                                            <p>Cardiologist</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="review-date">
+                                                        <span>Reviewed on: 20 May 2023</span>
+                                                    </div>
+                                                </div>
+                                                <div class="review-rating">
+                                                    <div class="rating">
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star-half-alt"></i>
+                                                        <span>(4.5)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="review-content">
+                                                    <p>Dr. Sarah was very professional and thorough in her examination. She explained my condition clearly and prescribed effective medication. The wait time was a bit long, but the quality of care was worth it.</p>
+                                                </div>
+                                                <div class="review-actions">
+                                                    <button class="btn btn-small btn-outline">Edit Review</button>
+                                                    <button class="btn btn-small btn-outline delete-btn">Delete</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="review-item">
+                                                <div class="review-header">
+                                                    <div class="doctor-info">
+                                                        <img src="https://via.placeholder.com/50" alt="Dr. Ayesha Malik">
+                                                        <div>
+                                                            <h4>Dr. Ayesha Malik</h4>
+                                                            <p>Dermatologist</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="review-date">
+                                                        <span>Reviewed on: 10 March 2023</span>
+                                                    </div>
+                                                </div>
+                                                <div class="review-rating">
+                                                    <div class="rating">
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <span>(5.0)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="review-content">
+                                                    <p>Excellent experience with Dr. Ayesha. She diagnosed my skin condition quickly and the treatment worked perfectly. Her clinic is clean and the staff is friendly. Highly recommended!</p>
+                                                </div>
+                                                <div class="review-actions">
+                                                    <button class="btn btn-small btn-outline">Edit Review</button>
+                                                    <button class="btn btn-small btn-outline delete-btn">Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="submit-review">
+                                        <h3>Submit a New Review</h3>
+                                        <form id="review-form">
+                                            <div class="form-group">
+                                                <label for="review-doctor">Select Doctor</label>
+                                                <select id="review-doctor" required>
+                                                    <option value="">Select a doctor</option>
+                                                    <option value="Dr. Sarah Ahmed">Dr. Sarah Ahmed - Cardiologist</option>
+                                                    <option value="Dr. Imran Khan">Dr. Imran Khan - Neurologist</option>
+                                                    <option value="Dr. Ayesha Malik">Dr. Ayesha Malik - Dermatologist</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label>Rating</label>
+                                                <div class="star-rating">
+                                                    <i class="far fa-star" data-rating="1"></i>
+                                                    <i class="far fa-star" data-rating="2"></i>
+                                                    <i class="far fa-star" data-rating="3"></i>
+                                                    <i class="far fa-star" data-rating="4"></i>
+                                                    <i class="far fa-star" data-rating="5"></i>
+                                                    <input type="hidden" id="rating-value" value="0" required>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="review-text">Your Review</label>
+                                                <textarea id="review-text" placeholder="Share your experience with this doctor" required></textarea>
+                                            </div>
+                                            
+                                            <div class="form-actions">
+                                                <button type="reset" class="btn btn-outline">Clear</button>
+                                                <button type="submit" class="btn">Submit Review</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prescriptions Tab -->
+                    <div class="tab-content" id="prescriptions">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Your Prescriptions</h2>
+                                <p>View and manage your prescriptions</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="filter-container">
+                                    <div class="filter-group">
+                                        <label for="prescription-date-filter">Filter by Date</label>
+                                        <select id="prescription-date-filter">
+                                            <option value="all">All Time</option>
+                                            <option value="month">Last Month</option>
+                                            <option value="6months">Last 6 Months</option>
+                                            <option value="year">Last Year</option>
+                                        </select>
+                                    </div>
+                                    <div class="filter-group">
+                                        <label for="prescription-status-filter">Filter by Status</label>
+                                        <select id="prescription-status-filter">
+                                            <option value="all">All Status</option>
+                                            <option value="active">Active</option>
+                                            <option value="completed">Completed</option>
+                                            <option value="expired">Expired</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="prescriptions-list">
+                                    <div class="prescription-item active">
+                                        <div class="prescription-header">
+                                            <div class="prescription-info">
+                                                <h4>Prescription #P-2023-0512</h4>
+                                                <div class="prescription-meta">
+                                                    <span><i class="fas fa-calendar"></i> 15 May 2023</span>
+                                                    <span><i class="fas fa-user-md"></i> Dr. Sarah Ahmed</span>
+                                                    <span class="status active">Active</span>
+                                                </div>
+                                            </div>
+                                            <div class="prescription-actions">
+                                                <button class="btn btn-small">View Details</button>
+                                                <button class="btn btn-small btn-outline">Download</button>
+                                            </div>
+                                        </div>
+                                        <div class="prescription-details">
+                                            <div class="medicine-list">
+                                                <div class="medicine-item">
+                                                    <div class="medicine-name">Amlodipine 5mg</div>
+                                                    <div class="medicine-dosage">1 tablet</div>
+                                                    <div class="medicine-frequency">Once daily</div>
+                                                    <div class="medicine-duration">30 days</div>
+                                                </div>
+                                                <div class="medicine-item">
+                                                    <div class="medicine-name">Aspirin 75mg</div>
+                                                    <div class="medicine-dosage">1 tablet</div>
+                                                    <div class="medicine-frequency">Once daily</div>
+                                                    <div class="medicine-duration">30 days</div>
+                                                </div>
+                                            </div>
+                                            <div class="prescription-notes">
+                                                <p><strong>Special Instructions:</strong> Take Amlodipine in the morning and Aspirin after dinner. Avoid grapefruit juice while on Amlodipine.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="prescription-item completed">
+                                        <div class="prescription-header">
+                                            <div class="prescription-info">
+                                                <h4>Prescription #P-2023-0410</h4>
+                                                <div class="prescription-meta">
+                                                    <span><i class="fas fa-calendar"></i> 10 April 2023</span>
+                                                    <span><i class="fas fa-user-md"></i> Dr. Sarah Ahmed</span>
+                                                    <span class="status completed">Completed</span>
+                                                </div>
+                                            </div>
+                                            <div class="prescription-actions">
+                                                <button class="btn btn-small">View Details</button>
+                                                <button class="btn btn-small btn-outline">Download</button>
+                                            </div>
+                                        </div>
+                                        <div class="prescription-details">
+                                            <div class="medicine-list">
+                                                <div class="medicine-item">
+                                                    <div class="medicine-name">Paracetamol 500mg</div>
+                                                    <div class="medicine-dosage">1 tablet</div>
+                                                    <div class="medicine-frequency">As needed for pain</div>
+                                                    <div class="medicine-duration">7 days</div>
+                                                </div>
+                                            </div>
+                                            <div class="prescription-notes">
+                                                <p><strong>Special Instructions:</strong> Take when needed for pain or fever. Do not exceed 8 tablets in 24 hours.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="prescription-item expired">
+                                        <div class="prescription-header">
+                                            <div class="prescription-info">
+                                                <h4>Prescription #P-2023-0305</h4>
+                                                <div class="prescription-meta">
+                                                    <span><i class="fas fa-calendar"></i> 5 March 2023</span>
+                                                    <span><i class="fas fa-user-md"></i> Dr. Ayesha Malik</span>
+                                                    <span class="status expired">Expired</span>
+                                                </div>
+                                            </div>
+                                            <div class="prescription-actions">
+                                                <button class="btn btn-small">View Details</button>
+                                                <button class="btn btn-small btn-outline">Download</button>
+                                            </div>
+                                        </div>
+                                        <div class="prescription-details">
+                                            <div class="medicine-list">
+                                                <div class="medicine-item">
+                                                    <div class="medicine-name">Hydrocortisone Cream 1%</div>
+                                                    <div class="medicine-dosage">Apply thin layer</div>
+                                                    <div class="medicine-frequency">Twice daily</div>
+                                                    <div class="medicine-duration">14 days</div>
+                                                </div>
+                                                <div class="medicine-item">
+                                                    <div class="medicine-name">Cetirizine 10mg</div>
+                                                    <div class="medicine-dosage">1 tablet</div>
+                                                    <div class="medicine-frequency">Once daily</div>
+                                                    <div class="medicine-duration">14 days</div>
+                                                </div>
+                                            </div>
+                                            <div class="prescription-notes">
+                                                <p><strong>Special Instructions:</strong> Apply cream to affected areas. Take Cetirizine at night as it may cause drowsiness.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>@copyright CR MedSync| 2025</p>
+        </div>
+    </footer>
+
+    <script src="/static/patient.js"></script>
+</body>
+</html>

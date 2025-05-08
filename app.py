@@ -177,7 +177,14 @@ def savePrescription():
 def sendReportId():
     return jsonify(value = session.get('report_id', -1))
 
-
+@app.route('/doctorByCnic/<cnic>')
+def getDoctorNameByCnic(cnic):
+    print(f"Cnic for DBC: {cnic}")
+    doctor = Doctor.query.filter_by(cnic = cnic).first()
+    print(f"Dname: {doctor.name}")
+    if doctor is None:
+        return jsonify({"error": "Doctor not found"}), 404
+    return jsonify(doctor.name)
 
 @app.route('/patients')
 def patients():
@@ -199,7 +206,8 @@ def searchDoctor(name):
     doctor_data = []
     query = text("SELECT AVG(rating) FROM review GROUP BY doctor_cnic HAVING doctor_cnic = :cnic")
     for i in range(len(doctor)):
-        rating = db.session.execute(query, {"cnic": doctor[i].cnic}).fetchone()
+        rating_res = db.session.execute(query, {"cnic": doctor[i].cnic}).fetchone()
+        rating = float(rating_res[0]) if rating_res else None 
         data = {
             "name" : doctor[i].name,
             "cnic" : doctor[i].cnic,
@@ -215,12 +223,14 @@ def searchDoctor(name):
 @app.route('/patient/book_appointment', methods = ['POST'])
 def bookAppointment():
     pcnic = request.form.get('pcnic')
-    dcnic = Doctor.query.filter_by(name = request.form.get('dname')).first()
+    dname = request.form.get('dname')
+    dcnic = Doctor.query.filter_by(name = dname).first().cnic
     date = request.form.get('date')
     time = request.form.get('time')
-    if (Appointment.query.filter_by(doctor_cnic = dcnic, date = date, time = time).first().id is not None):
+    a = Appointment.query.filter_by(doctor_cnic = dcnic, date = date, time = time).first()
+    if (a):
         return jsonify("Time slot not available...")
-    
+
     new_appointment = Appointment(
         patient_cnic = pcnic,
         doctor_cnic = dcnic,
@@ -231,6 +241,38 @@ def bookAppointment():
     db.session.commit()
     return redirect(url_for('patients'))
 
+@app.route('/patient/review', methods=['POST'])
+def giveReview():
+    dcnic = request.form.get('dcnic')
+    pcnic = request.form.get('pcnic')
+    rating = request.form.get('rating')
+    review = request.form.get('review-text')
+    new_review = Review(
+        patient_cnic = pcnic,
+        doctor_cnic = dcnic,
+        rating = rating,
+        comment = review,
+        time = datetime.now()
+    )
+    db.session.add(new_review)
+    db.session.commit()
+    return redirect(url_for('patients'))
+
+@app.route('/patient/<pcnic>/prev_reviews')
+def getPreviousReviews(pcnic):
+    reviews = Review.query.filter_by(patient_cnic = pcnic).all()
+    prev_reviews = []
+    for review in reviews:
+        r = {
+            "pcnic" : pcnic,
+            "dname" : Doctor.query.filter_by(cnic = review.doctor_cnic).first().name,
+            "rating" : review.rating,
+            "review" : review.comment,
+            "pic" : Doctor.query.filter_by(cnic = review.doctor_cnic).first().pic
+        }
+        print(r)
+        prev_reviews.append(r)
+    return jsonify(prev_reviews)
 
 @app.route('/diseases')
 def diseases():
@@ -257,25 +299,60 @@ def chemicals():
     chemicals = Chemical.query.all()
     return render_template('chemicals.html', chemicals=chemicals)
 
-@app.route('/reports')
-def reports():
-    reports = Report.query.all()
-    return render_template('reports.html', reports=reports)
+@app.route('/reports/<pcnic>')
+def reports(pcnic):
+    reports = Report.query.filter_by(patient_cnic = pcnic).all()
+    prev_reports = []
+    for r in reports:
+        report = {
+            "dname" : Doctor.query.filter_by(cnic = r.doctor_cnic).first().name,
+            "diagnosis" : r.diagnosis,
+            "date" : r.rdate,
+            "disease" : Disease.query.filter_by(id = r.disease_id).first().name
+        }
+        prev_reports.append(report)
 
-@app.route('/prescriptions')
-def prescriptions():
-    prescriptions = Prescription.query.all()
-    return render_template('prescriptions.html', prescriptions=prescriptions)
+    return jsonify(prev_reports)
+
+@app.route('/prescriptions/<pcnic>')
+def prescriptions(pcnic):
+    prescriptions = Prescription.query.filter_by(pcnic=pcnic).all()
+    prev_presc = []
+    placed_presc = []
+    for p in prescriptions:
+        if p.report_id not in placed_presc:
+            placed_presc.append(p.report_id)
+            related_prescs = Prescription.query.filter_by(report_id=p.report_id).all()
+            prescription = {
+                "dname" : Doctor.query.filter_by(cnic = (Report.query.filter_by(id =  p.report_id).first()).doctor_cnic).first().name,
+                "name": "Prescription #" + str(p.report_id),
+                "medicines": [Medicine.query.filter_by(id=presc.medicine_id).first().name for presc in related_prescs],
+                "dosages": [presc.dosage for presc in related_prescs],
+                "date" : Report.query.filter_by(id = p.report_id).first().rdate
+            }
+            prev_presc.append(prescription)
+
+    return jsonify(prev_presc)
 
 @app.route('/reviews')
 def reviews():
     reviews = Review.query.all()
     return render_template('reviews.html', reviews=reviews)
 
-@app.route('/appointments')
-def appointments():
-    appointments = Appointment.query.all()
-    return render_template('appointments.html', appointments=appointments)
+
+@app.route('/appointments/<pcnic>')
+def appointments(pcnic):
+    appointments = Appointment.query.filter_by(patient_cnic = pcnic).all()
+    apps = []
+    for appointment in appointments:
+        apps.append({
+            "date": appointment.date.isoformat(),  # 'YYYY-MM-DD'
+            "time": appointment.time.strftime("%H:%M"),  # 'HH:MM'
+            "dcnic": appointment.doctor_cnic,
+            "dname": Doctor.query.filter_by(cnic = appointment.doctor_cnic).first().name
+        })
+    return jsonify(apps)
+
 
 @app.route('/companies')
 def companies():

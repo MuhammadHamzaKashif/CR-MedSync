@@ -17,7 +17,7 @@
         </div>
         <nav>
             <ul>
-                <li><a href="index.html">Home</a></li>
+                <li><a href="/">Home</a></li>
                 <li><a href="#">Acknowledgements</a></li>
                 <li><a href="#">Contact</a></li>
             </ul>
@@ -239,43 +239,8 @@
                                 <div class="upcoming-appointments">
                                     <h3>Your Upcoming Appointments</h3>
                                     <div class="appointments-list" id="upcoming-appointments-list">
-                                        <div class="appointment-item">
-                                            <div class="appointment-date">
-                                                <div class="date-box">
-                                                    <span class="month">Jun</span>
-                                                    <span class="day">15</span>
-                                                </div>
-                                                <span class="time">10:00 AM</span>
-                                            </div>
-                                            <div class="appointment-details">
-                                                <h4>Dr. Sarah Ahmed</h4>
-                                                <p>Cardiologist</p>
-                                                <p class="reason">Reason: Regular checkup for hypertension</p>
-                                            </div>
-                                            <div class="appointment-actions">
-                                                <button class="btn btn-small btn-outline">Reschedule</button>
-                                                <button class="btn btn-small btn-outline cancel-btn">Cancel</button>
-                                            </div>
-                                        </div>
                                         
-                                        <div class="appointment-item">
-                                            <div class="appointment-date">
-                                                <div class="date-box">
-                                                    <span class="month">Jul</span>
-                                                    <span class="day">02</span>
-                                                </div>
-                                                <span class="time">02:30 PM</span>
-                                            </div>
-                                            <div class="appointment-details">
-                                                <h4>Dr. Ayesha Malik</h4>
-                                                <p>Dermatologist</p>
-                                                <p class="reason">Reason: Skin rash consultation</p>
-                                            </div>
-                                            <div class="appointment-actions">
-                                                <button class="btn btn-small btn-outline">Reschedule</button>
-                                                <button class="btn btn-small btn-outline cancel-btn">Cancel</button>
-                                            </div>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -304,9 +269,6 @@
                                         <label for="doctor-filter">Filter by Doctor</label>
                                         <select id="doctor-filter">
                                             <option value="all">All Doctors</option>
-                                            <option value="Dr. Sarah Ahmed">Dr. Sarah Ahmed</option>
-                                            <option value="Dr. Imran Khan">Dr. Imran Khan</option>
-                                            <option value="Dr. Ayesha Malik">Dr. Ayesha Malik</option>
                                         </select>
                                     </div>
                                 </div>
@@ -504,14 +466,15 @@
                                     
                                     <div class="submit-review">
                                         <h3>Submit a New Review</h3>
-                                        <form id="review-form">
+                                        <form id="review-form" action="/patient/review" method="post">
+                                            <div class="form-group">
+                                                <label for="review-patient">Patient Cnic</label>
+                                                <input type="text" id="pcnic" name="pcnic" value="{{patient.cnic}}" required>
+                                            </div>
                                             <div class="form-group">
                                                 <label for="review-doctor">Select Doctor</label>
-                                                <select id="review-doctor" required>
-                                                    <option value="">Select a doctor</option>
-                                                    <option value="Dr. Sarah Ahmed">Dr. Sarah Ahmed - Cardiologist</option>
-                                                    <option value="Dr. Imran Khan">Dr. Imran Khan - Neurologist</option>
-                                                    <option value="Dr. Ayesha Malik">Dr. Ayesha Malik - Dermatologist</option>
+                                                <select id="review-doctor" name="dcnic" required>
+                                                    <option value="None">Select a doctor</option>
                                                 </select>
                                             </div>
                                             
@@ -523,13 +486,13 @@
                                                     <i class="far fa-star" data-rating="3"></i>
                                                     <i class="far fa-star" data-rating="4"></i>
                                                     <i class="far fa-star" data-rating="5"></i>
-                                                    <input type="hidden" id="rating-value" value="0" required>
+                                                    <input type="hidden" id="rating-value" name="rating" value="0" required>
                                                 </div>
                                             </div>
                                             
                                             <div class="form-group">
                                                 <label for="review-text">Your Review</label>
-                                                <textarea id="review-text" placeholder="Share your experience with this doctor" required></textarea>
+                                                <textarea id="review-text" name="review-text" placeholder="Share your experience with this doctor" required></textarea>
                                             </div>
                                             
                                             <div class="form-actions">
@@ -572,7 +535,7 @@
                                     </div>
                                 </div>
                                 
-                                <div class="prescriptions-list">
+                                <div class="prescriptions-list" id="prescriptions-container">
                                     <div class="prescription-item active">
                                         <div class="prescription-header">
                                             <div class="prescription-info">

@@ -85,6 +85,7 @@ class Review(db.Model):
     doctor_cnic = db.Column(db.Integer, db.ForeignKey('doctor.cnic'), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, nullable=False)
+    time = db.Column(db.DateTime, nullable=False)
 
 class Appointment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -2,6 +2,220 @@ document.addEventListener("DOMContentLoaded", () => {
     // Tab Switching
     const tabButtons = document.querySelectorAll(".tab-btn")
     const tabContents = document.querySelectorAll(".tab-content")
+    const upcomingAppointments = document.getElementById("upcoming-appointments-list")
+    const pcnic = document.getElementById('patient-cnic').textContent
+
+async function loadUpcomingAppointments(pcnic){
+    const response = await fetch(`/appointments/${pcnic}`);
+    const data = await response.json();
+
+            if (!data){
+                const res = document.createElement('h2');
+                res.textContent = "No upcoming appointments"
+                upcomingAppointments.appendChild(res)
+            }
+            else{
+                for (const appointment of data) {
+                    const name = appointment.dname;
+                    upcomingAppointments.innerHTML += `<div class="appointment-item">
+                                            <div class="appointment-date">
+                                                <div class="date-box">
+                                                    <span class="month">${getMonthName(new Date(appointment.date))}</span>
+                                                    <span class="day">${new Date(appointment.date).getDate()}</span>
+                                                </div>
+                                                <span class="time">${appointment.time}</span>
+                                            </div>
+                                            <div class="appointment-details">
+                                                <h4>${name}</h4>
+                                            </div>
+                                            <div class="appointment-actions">
+                                                <button class="btn btn-small btn-outline">Reschedule</button>
+                                                <button class="btn btn-small btn-outline cancel-btn">Cancel</button>
+                                            </div>
+                                        </div>`
+                }
+
+                }
+            }
+            function loadPreviousReviews(pcnic) {
+                fetch(`/patient/${pcnic}/prev_reviews`)
+                    .then(response => response.json())
+                    .then(async data => {
+                        const reviewList = document.querySelector('.review-list');
+                        reviewList.innerHTML = ''; // clear existing reviews
+            
+                        for (const review of data) {
+                            // Fetch doctor details (like name and specialization)
+                            //console.log("dcnic:   ", review.dcnic)
+                            //const dname = await getNameByCnic(review.doctor_cnic);
+                            //console.log("dname:   ", review.dname)
+                            //const doctorData = await dname.json();
+            
+                            const rating = parseFloat(review.rating);
+                            const fullStars = Math.floor(rating);
+                            const halfStar = rating % 1 >= 0.5;
+            
+                            let starIcons = '';
+                            for (let i = 0; i < fullStars; i++) {
+                                starIcons += `<i class="fas fa-star"></i>`;
+                            }
+                            if (halfStar) {
+                                starIcons += `<i class="fas fa-star-half-alt"></i>`;
+                            }
+                            while (starIcons.split('<i').length - 1 < 5) {
+                                starIcons += `<i class="far fa-star"></i>`;
+                            }
+            
+                            const reviewHTML = `
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="doctor-info">
+                                            <img src="${review.pic}" alt="${review.dname}">
+                                            <div>
+                                                <h4>${review.dname}</h4>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="review-date">
+                                            <span>Reviewed on: ${new Date().toLocaleDateString('en-GB', {
+                                                day: '2-digit',
+                                                month: 'long',
+                                                year: 'numeric'
+                                            })}</span>
+                                        </div>
+                                    </div>
+                                    <div class="review-rating">
+                                        <div class="rating">
+                                            ${starIcons}
+                                            <span>(${rating.toFixed(1)})</span>
+                                        </div>
+                                    </div>
+                                    <div class="review-content">
+                                        <p>${review.review}</p>
+                                    </div>
+                                    <div class="review-actions">
+                                        <button class="btn btn-small btn-outline">Edit Review</button>
+                                        <button class="btn btn-small btn-outline delete-btn">Delete</button>
+                                    </div>
+                                </div>
+                            `;
+            
+                            reviewList.innerHTML += reviewHTML;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Failed to load previous reviews:', error);
+                    });
+            }
+            async function loadReports(pcnic) {
+                const response = await fetch(`/reports/${pcnic}`);
+                const reports = await response.json();
+            
+                const container = document.querySelector(".medical-records");
+                container.innerHTML = ""; // clear previous content
+            
+                reports.forEach(report => {
+                    const record = document.createElement("div");
+                    record.className = "record-item";
+                    record.innerHTML = `
+                        <div class="record-date">
+                            <span class="date">${formatDate(report.date)}</span>
+                            <span class="doctor">${report.dname}</span>
+                        </div>
+                        <div class="record-details">
+                            <h4>${report.disease} Checkup</h4>
+                            <div class="diagnosis">
+                                <span class="label">Diagnosis:</span>
+                                <span>${report.diagnosis}</span>
+                            </div>
+                        </div>
+                        <div class="record-actions">
+                            <button class="btn btn-small">View Full Report</button>
+                            <button class="btn btn-small btn-outline">Download PDF</button>
+                        </div>
+                    `;
+                    container.appendChild(record);
+                });
+            }
+            
+            function formatDate(dateStr) {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+            }
+            function parseDosage(dosageStr) {
+                // Split the string based on known keywords
+                const [baseDosage, freqPart, durPart] = dosageStr.split(/Frequency:|Duration:/).map(s => s.trim());
+              
+                return {
+                  dosage: baseDosage,               // "100mg"
+                  frequency: freqPart || "N/A",     // "twice"
+                  duration: durPart ? `${durPart} days` : "N/A" // "7 days"
+                };
+              }
+              async function loadPrescriptions(pcnic) {
+                const response = await fetch(`/prescriptions/${pcnic}`);
+                const data = await response.json();
+                const container = document.getElementById('prescriptions-container');
+                container.innerHTML = '';
+              
+                data.forEach(prescription => {
+                  const prescDiv = document.createElement('div');
+                  prescDiv.className = 'prescription-item active';
+              
+                  let medicineHTML = '';
+                  for (let i = 0; i < prescription.medicines.length; i++) {
+                    const parsed = parseDosage(prescription.dosages[i]);
+                    medicineHTML += `
+                      <div class="medicine-item">
+                        <div class="medicine-name">${prescription.medicines[i]}</div>
+                        <div class="medicine-dosage">${parsed.dosage}</div>
+                        <div class="medicine-frequency">${parsed.frequency}</div>
+                        <div class="medicine-duration">${parsed.duration}</div>
+                      </div>
+                    `;
+                  }
+              
+                  prescDiv.innerHTML = `
+                    <div class="prescription-header">
+                      <div class="prescription-info">
+                        <h4>${prescription.name}</h4>
+                        <div class="prescription-meta">
+                          <span><i class="fas fa-calendar"></i>${prescription.date}</span>
+                          <span><i class="fas fa-user-md"></i>${prescription.dname}</span>
+                          <span class="status active">Active</span>
+                        </div>
+                      </div>
+                      <div class="prescription-actions">
+                        <button class="btn btn-small">View Details</button>
+                        <button class="btn btn-small btn-outline">Download</button>
+                      </div>
+                    </div>
+                    <div class="prescription-details">
+                      <div class="medicine-list">
+                        ${medicineHTML}
+                      </div>
+                      <div class="prescription-notes">
+                        <p><strong>Special Instructions:</strong> Not available</p>
+                      </div>
+                    </div>
+                  `;
+              
+                  container.appendChild(prescDiv);
+                });
+              }
+              
+              
+            
+            loadUpcomingAppointments(pcnic);
+            populateDoctorSelect(pcnic);
+            loadPreviousReviews(pcnic);
+            loadReports(pcnic);
+            loadPrescriptions(pcnic);
+    
 
     tabButtons.forEach((button) => {
         button.addEventListener("click", () => {
@@ -67,52 +281,75 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // Function to add a new appointment to the list
-    function addNewAppointment(doctor, date, time, reason) {
-        const appointmentsList = document.getElementById("upcoming-appointments-list")
-        if (!appointmentsList) return
+    // function addNewAppointment(doctor, date, time, reason) {
+    //     const appointmentsList = document.getElementById("upcoming-appointments-list")
+    //     if (!appointmentsList) return
 
-        // Parse the date
-        const dateObj = new Date(date)
-        const month = dateObj.toLocaleString("default", { month: "short" })
-        const day = dateObj.getDate()
+    //     // Parse the date
+    //     const dateParts = date.split("/");
+    // const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // YYYY-MM-DD
 
-        // Format the time
-        const timeObj = new Date(`2000-01-01T${time}`)
-        const formattedTime = timeObj.toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true })
+    // // Parse the formatted date
+    // const dateObj = new Date(formattedDate);
+    //     const month = dateObj.toLocaleString("default", { month: "short" })
+    //     const day = dateObj.getDate()
 
-        // Create the appointment item
-        const appointmentItem = document.createElement("div")
-        appointmentItem.className = "appointment-item"
-        appointmentItem.innerHTML = `
-              <div class="appointment-date">
-                  <div class="date-box">
-                      <span class="month">${month}</span>
-                      <span class="day">${day}</span>
-                  </div>
-                  <span class="time">${formattedTime}</span>
-              </div>
-              <div class="appointment-details">
-                  <h4>${doctor}</h4>
-                  <p>${doctor.split(" ")[0] === "Dr." ? "Doctor" : "Specialist"}</p>
-                  <p class="reason">Reason: ${reason}</p>
-              </div>
-              <div class="appointment-actions">
-                  <button class="btn btn-small btn-outline">Reschedule</button>
-                  <button class="btn btn-small btn-outline cancel-btn">Cancel</button>
-              </div>
-          `
+    //     // Format the time
+    //    // const timeObj = new Date(`2000-01-01T${time}`)
+    //     //const formattedTime = timeObj.toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true })
 
-        // Add to the list
-        appointmentsList.prepend(appointmentItem)
+    //     const timeRegex = /^(\d{1,2}):(\d{2})(AM|PM)$/i;
+    //     const timeMatch = time.match(timeRegex);
+    
+    //     if (!timeMatch) {
+    //         console.error("Invalid time format:", time);
+    //         return;
+    //     }
+    
+    //     let hours = parseInt(timeMatch[1], 10);
+    //     const minutes = timeMatch[2];
+    //     const ampm = timeMatch[3].toUpperCase();
+    
+    //     if (ampm === "PM" && hours < 12) hours += 12;
+    //     if (ampm === "AM" && hours === 12) hours = 0;
+    
+    //     // Create the formatted time (use a default date to ensure proper formatting)
+    //     const timeObj = new Date(2000, 0, 1, hours, minutes);
+    //     const formattedTime = timeObj.toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true });
+    
+    //     // Create the appointment item
+    //     const appointmentItem = document.createElement("div")
+    //     appointmentItem.className = "appointment-item"
+    //     appointmentItem.innerHTML = `
+    //           <div class="appointment-date">
+    //               <div class="date-box">
+    //                   <span class="month">${month}</span>
+    //                   <span class="day">${day}</span>
+    //               </div>
+    //               <span class="time">${formattedTime}</span>
+    //           </div>
+    //           <div class="appointment-details">
+    //               <h4>${doctor}</h4>
+    //               <p>${doctor.split(" ")[0] === "Dr." ? "Doctor" : "Specialist"}</p>
+    //               <p class="reason">Reason: ${reason}</p>
+    //           </div>
+    //           <div class="appointment-actions">
+    //               <button class="btn btn-small btn-outline">Reschedule</button>
+    //               <button class="btn btn-small btn-outline cancel-btn">Cancel</button>
+    //           </div>
+    //       `
 
-        // Add event listeners to the new buttons
-        const cancelBtn = appointmentItem.querySelector(".cancel-btn")
-        cancelBtn.addEventListener("click", () => {
-            if (confirm("Are you sure you want to cancel this appointment?")) {
-                appointmentItem.remove()
-            }
-        })
-    }
+    //     // Add to the list
+    //     appointmentsList.prepend(appointmentItem)
+
+    //     // Add event listeners to the new buttons
+    //     const cancelBtn = appointmentItem.querySelector(".cancel-btn")
+    //     cancelBtn.addEventListener("click", () => {
+    //         if (confirm("Are you sure you want to cancel this appointment?")) {
+    //             appointmentItem.remove()
+    //         }
+    //     })
+    // }
 
     // Doctor Search and Filter
     const specialityFilter = document.getElementById("speciality-filter")
@@ -221,9 +458,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             const reason = document.getElementById("appointment-reason").value
                             const doctor = modalDoctorName.textContent
 
-                            // In a real application, you would send this data to the server
-                            // For demo purposes, we'll just show an alert
-                            alert(`Appointment booked successfully with ${doctor} on ${date} at ${time}`)
 
                             // Add the appointment to the list (for demo purposes)
                             addNewAppointment(doctor, date, time, reason)
@@ -304,31 +538,31 @@ document.addEventListener("DOMContentLoaded", () => {
     // Review Form Submission
     const reviewForm = document.getElementById("review-form")
 
-    if (reviewForm) {
-        reviewForm.addEventListener("submit", (e) => {
-            e.preventDefault()
+    // if (reviewForm) {
+    //     reviewForm.addEventListener("submit", () => {
+    //         //e.preventDefault()
 
-            const doctor = document.getElementById("review-doctor").value
-            const rating = document.getElementById("rating-value").value
-            const reviewText = document.getElementById("review-text").value
+    //         const doctor = document.getElementById("review-doctor").value
+    //         const rating = document.getElementById("rating-value").value
+    //         const reviewText = document.getElementById("review-text").value
 
-            if (rating === "0") {
-                alert("Please select a rating")
-                return
-            }
+    //         if (rating === "0") {
+    //             alert("Please select a rating")
+    //             return
+    //         }
 
-            // In a real application, you would send this data to the server
-            // For demo purposes, we'll just show an alert and add the review to the list
-            alert(`Review submitted successfully for ${doctor}`)
+    //         // In a real application, you would send this data to the server
+    //         // For demo purposes, we'll just show an alert and add the review to the list
+    //         //alert(`Review submitted successfully for ${doctor}`)
 
-            // Add the review to the list (for demo purposes)
-            addNewReview(doctor, rating, reviewText)
+    //         // Add the review to the list (for demo purposes)
+    //         addNewReview(doctor, rating, reviewText)
 
-            // Reset the form
-            reviewForm.reset()
-            highlightStars(0)
-        })
-    }
+    //         // Reset the form
+    //         reviewForm.reset()
+    //         highlightStars(0)
+    //     })
+    // }
 
     // Function to add a new review to the list
     function addNewReview(doctor, rating, reviewText) {
@@ -435,6 +669,7 @@ document.addEventListener("DOMContentLoaded", () => {
         prescriptionStatusFilter.addEventListener("change", filterPrescriptions)
     }
 
+
     function filterMedicalRecords() {
         const dateValue = dateFilter.value
         const doctorValue = doctorFilter.value
@@ -513,7 +748,21 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         })
     }
+    const form = document.getElementById("review-form");
+    const select = document.getElementById("review-doctor");
 
+    form.addEventListener("submit", function (e) {
+        if (!select.value) {
+            e.preventDefault();
+            alert("Please wait for the doctor list to load or select a doctor.");
+        }
+    });
+
+    const rev_select = document.getElementById('review-doctor')
+    rev_select.addEventListener('change', ()=>{
+        console.log("Selected dcnic: ", this.value);
+    })
+    //rev_select
     // View prescription details buttons
     const viewPrescriptionButtons = document.querySelectorAll(".prescription-actions .btn:not(.btn-outline)")
 
@@ -537,3 +786,37 @@ document.addEventListener("DOMContentLoaded", () => {
         details.style.display = "none"
     })
 })
+function getMonthName(date) {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    //const date = new Date(date);
+    return months[date.getMonth()];
+}
+async function getNameByCnic(cnic) {
+    const res = await fetch(`/doctorByCnic/${cnic}`);
+    const data = await res.json();
+    return data.name; // or whatever the correct property is
+}
+
+async function populateDoctorSelect(patientCnic) {
+    const response = await fetch(`/appointments/${patientCnic}`);
+    const appointments = await response.json();
+
+    const seenDoctors = new Set();
+    const select = document.getElementById("review-doctor");
+    const history_select = document.getElementById("doctor-filter")
+
+    for (const appointment of appointments) {
+        const dcnic = appointment.dcnic;
+        if (!seenDoctors.has(dcnic)) {
+            seenDoctors.add(dcnic);
+
+            //console.log("going ti get name for select of cnic ",dcnic)
+            const dname = appointment.dname;
+            //console.log("got the name ",dname);
+            select.innerHTML += `<option value="${dcnic}">${dname}</option>`;
+            history_select.innerHTML += `<option value="${dname}">${dname}</option>`;
+        }
+    }
+}

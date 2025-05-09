@@ -5,19 +5,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const upcomingAppointments = document.getElementById("upcoming-appointments-list")
     const pcnic = document.getElementById('patient-cnic').textContent
 
-async function loadUpcomingAppointments(pcnic){
-    const response = await fetch(`/appointments/${pcnic}`);
-    const data = await response.json();
+    async function loadUpcomingAppointments(pcnic) {
+        const response = await fetch(`/appointments/${pcnic}`);
+        const data = await response.json();
 
-            if (!data){
-                const res = document.createElement('h2');
-                res.textContent = "No upcoming appointments"
-                upcomingAppointments.appendChild(res)
-            }
-            else{
-                for (const appointment of data) {
-                    const name = appointment.dname;
-                    upcomingAppointments.innerHTML += `<div class="appointment-item">
+        if (!data) {
+            const res = document.createElement('h2');
+            res.textContent = "No upcoming appointments"
+            upcomingAppointments.appendChild(res)
+        }
+        else {
+            for (const appointment of data) {
+                const name = appointment.dname;
+                upcomingAppointments.innerHTML += `<div class="appointment-item">
                                             <div class="appointment-date">
                                                 <div class="date-box">
                                                     <span class="month">${getMonthName(new Date(appointment.date))}</span>
@@ -33,40 +33,40 @@ async function loadUpcomingAppointments(pcnic){
                                                 <button class="btn btn-small btn-outline cancel-btn">Cancel</button>
                                             </div>
                                         </div>`
-                }
-
-                }
             }
-            function loadPreviousReviews(pcnic) {
-                fetch(`/patient/${pcnic}/prev_reviews`)
-                    .then(response => response.json())
-                    .then(async data => {
-                        const reviewList = document.querySelector('.review-list');
-                        reviewList.innerHTML = ''; // clear existing reviews
-            
-                        for (const review of data) {
-                            // Fetch doctor details (like name and specialization)
-                            //console.log("dcnic:   ", review.dcnic)
-                            //const dname = await getNameByCnic(review.doctor_cnic);
-                            //console.log("dname:   ", review.dname)
-                            //const doctorData = await dname.json();
-            
-                            const rating = parseFloat(review.rating);
-                            const fullStars = Math.floor(rating);
-                            const halfStar = rating % 1 >= 0.5;
-            
-                            let starIcons = '';
-                            for (let i = 0; i < fullStars; i++) {
-                                starIcons += `<i class="fas fa-star"></i>`;
-                            }
-                            if (halfStar) {
-                                starIcons += `<i class="fas fa-star-half-alt"></i>`;
-                            }
-                            while (starIcons.split('<i').length - 1 < 5) {
-                                starIcons += `<i class="far fa-star"></i>`;
-                            }
-            
-                            const reviewHTML = `
+
+        }
+    }
+    function loadPreviousReviews(pcnic) {
+        fetch(`/patient/${pcnic}/prev_reviews`)
+            .then(response => response.json())
+            .then(async data => {
+                const reviewList = document.querySelector('.review-list');
+                reviewList.innerHTML = ''; // clear existing reviews
+
+                for (const review of data) {
+                    // Fetch doctor details (like name and specialization)
+                    //console.log("dcnic:   ", review.dcnic)
+                    //const dname = await getNameByCnic(review.doctor_cnic);
+                    //console.log("dname:   ", review.dname)
+                    //const doctorData = await dname.json();
+
+                    const rating = parseFloat(review.rating);
+                    const fullStars = Math.floor(rating);
+                    const halfStar = rating % 1 >= 0.5;
+
+                    let starIcons = '';
+                    for (let i = 0; i < fullStars; i++) {
+                        starIcons += `<i class="fas fa-star"></i>`;
+                    }
+                    if (halfStar) {
+                        starIcons += `<i class="fas fa-star-half-alt"></i>`;
+                    }
+                    while (starIcons.split('<i').length - 1 < 5) {
+                        starIcons += `<i class="far fa-star"></i>`;
+                    }
+
+                    const reviewHTML = `
                                 <div class="review-item">
                                     <div class="review-header">
                                         <div class="doctor-info">
@@ -78,10 +78,10 @@ async function loadUpcomingAppointments(pcnic){
                                         </div>
                                         <div class="review-date">
                                             <span>Reviewed on: ${new Date().toLocaleDateString('en-GB', {
-                                                day: '2-digit',
-                                                month: 'long',
-                                                year: 'numeric'
-                                            })}</span>
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                    })}</span>
                                         </div>
                                     </div>
                                     <div class="review-rating">
@@ -99,25 +99,25 @@ async function loadUpcomingAppointments(pcnic){
                                     </div>
                                 </div>
                             `;
-            
-                            reviewList.innerHTML += reviewHTML;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Failed to load previous reviews:', error);
-                    });
-            }
-            async function loadReports(pcnic) {
-                const response = await fetch(`/reports/${pcnic}`);
-                const reports = await response.json();
-            
-                const container = document.querySelector(".medical-records");
-                container.innerHTML = ""; // clear previous content
-            
-                reports.forEach(report => {
-                    const record = document.createElement("div");
-                    record.className = "record-item";
-                    record.innerHTML = `
+
+                    reviewList.innerHTML += reviewHTML;
+                }
+            })
+            .catch(error => {
+                console.error('Failed to load previous reviews:', error);
+            });
+    }
+    async function loadReports(pcnic) {
+        const response = await fetch(`/reports/${pcnic}`);
+        const reports = await response.json();
+
+        const container = document.querySelector(".medical-records");
+        container.innerHTML = ""; // clear previous content
+
+        reports.forEach(report => {
+            const record = document.createElement("div");
+            record.className = "record-item";
+            record.innerHTML = `
                         <div class="record-date">
                             <span class="date">${formatDate(report.date)}</span>
                             <span class="doctor">${report.dname}</span>
@@ -134,42 +134,42 @@ async function loadUpcomingAppointments(pcnic){
                             <button class="btn btn-small btn-outline">Download PDF</button>
                         </div>
                     `;
-                    container.appendChild(record);
-                });
-            }
-            
-            function formatDate(dateStr) {
-                const date = new Date(dateStr);
-                return date.toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                });
-            }
-            function parseDosage(dosageStr) {
-                // Split the string based on known keywords
-                const [baseDosage, freqPart, durPart] = dosageStr.split(/Frequency:|Duration:/).map(s => s.trim());
-              
-                return {
-                  dosage: baseDosage,               // "100mg"
-                  frequency: freqPart || "N/A",     // "twice"
-                  duration: durPart ? `${durPart} days` : "N/A" // "7 days"
-                };
-              }
-              async function loadPrescriptions(pcnic) {
-                const response = await fetch(`/prescriptions/${pcnic}`);
-                const data = await response.json();
-                const container = document.getElementById('prescriptions-container');
-                container.innerHTML = '';
-              
-                data.forEach(prescription => {
-                  const prescDiv = document.createElement('div');
-                  prescDiv.className = 'prescription-item active';
-              
-                  let medicineHTML = '';
-                  for (let i = 0; i < prescription.medicines.length; i++) {
-                    const parsed = parseDosage(prescription.dosages[i]);
-                    medicineHTML += `
+            container.appendChild(record);
+        });
+    }
+
+    function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+    function parseDosage(dosageStr) {
+        // Split the string based on known keywords
+        const [baseDosage, freqPart, durPart] = dosageStr.split(/Frequency:|Duration:/).map(s => s.trim());
+
+        return {
+            dosage: baseDosage,               // "100mg"
+            frequency: freqPart || "N/A",     // "twice"
+            duration: durPart ? `${durPart} days` : "N/A" // "7 days"
+        };
+    }
+    async function loadPrescriptions(pcnic) {
+        const response = await fetch(`/prescriptions/${pcnic}`);
+        const data = await response.json();
+        const container = document.getElementById('prescriptions-container');
+        container.innerHTML = '';
+
+        data.forEach(prescription => {
+            const prescDiv = document.createElement('div');
+            prescDiv.className = 'prescription-item active';
+
+            let medicineHTML = '';
+            for (let i = 0; i < prescription.medicines.length; i++) {
+                const parsed = parseDosage(prescription.dosages[i]);
+                medicineHTML += `
                       <div class="medicine-item">
                         <div class="medicine-name">${prescription.medicines[i]}</div>
                         <div class="medicine-dosage">${parsed.dosage}</div>
@@ -177,9 +177,9 @@ async function loadUpcomingAppointments(pcnic){
                         <div class="medicine-duration">${parsed.duration}</div>
                       </div>
                     `;
-                  }
-              
-                  prescDiv.innerHTML = `
+            }
+
+            prescDiv.innerHTML = `
                     <div class="prescription-header">
                       <div class="prescription-info">
                         <h4>${prescription.name}</h4>
@@ -203,19 +203,19 @@ async function loadUpcomingAppointments(pcnic){
                       </div>
                     </div>
                   `;
-              
-                  container.appendChild(prescDiv);
-                });
-              }
-              
-              
-            
-            loadUpcomingAppointments(pcnic);
-            populateDoctorSelect(pcnic);
-            loadPreviousReviews(pcnic);
-            loadReports(pcnic);
-            loadPrescriptions(pcnic);
-    
+
+            container.appendChild(prescDiv);
+        });
+    }
+
+
+
+    loadUpcomingAppointments(pcnic);
+    populateDoctorSelect(pcnic);
+    loadPreviousReviews(pcnic);
+    loadReports(pcnic);
+    loadPrescriptions(pcnic);
+
 
     tabButtons.forEach((button) => {
         button.addEventListener("click", () => {
@@ -300,23 +300,23 @@ async function loadUpcomingAppointments(pcnic){
 
     //     const timeRegex = /^(\d{1,2}):(\d{2})(AM|PM)$/i;
     //     const timeMatch = time.match(timeRegex);
-    
+
     //     if (!timeMatch) {
     //         console.error("Invalid time format:", time);
     //         return;
     //     }
-    
+
     //     let hours = parseInt(timeMatch[1], 10);
     //     const minutes = timeMatch[2];
     //     const ampm = timeMatch[3].toUpperCase();
-    
+
     //     if (ampm === "PM" && hours < 12) hours += 12;
     //     if (ampm === "AM" && hours === 12) hours = 0;
-    
+
     //     // Create the formatted time (use a default date to ensure proper formatting)
     //     const timeObj = new Date(2000, 0, 1, hours, minutes);
     //     const formattedTime = timeObj.toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true });
-    
+
     //     // Create the appointment item
     //     const appointmentItem = document.createElement("div")
     //     appointmentItem.className = "appointment-item"
@@ -401,7 +401,7 @@ async function loadUpcomingAppointments(pcnic){
                                             </div>
                                         </div>
                                         <div class="doctor-availability">
-                                            <p>Available: Mon-Fri, ${doctor.timing}</p>
+                                            <p>Available: Mon-Fri, </p><p id = "dtiming">${doctor.timing}</p>
                                             <button class="btn btn-small book-appointment" data-doctor="${doctor.name}">Book Appointment</button>
                                         </div>
                                     </div>`
@@ -423,6 +423,38 @@ async function loadUpcomingAppointments(pcnic){
                             document.getElementById('dname').value = doctorName
                             appointmentModal.classList.add("active")
                             document.body.style.overflow = "hidden" // Prevent scrolling when modal is open
+                            const doctorTiming = document.getElementById("dtiming").textContent;
+                            const [start, end] = doctorTiming.split(" - ").map(t => t.padStart(5, '0')); // Ensures 09:00 format
+                            generateTimeSlots(start, end);
+
+
+                            function generateTimeSlots(startTimeStr, endTimeStr) {
+                                const timeSelect = document.getElementById("appointment-time");
+                                timeSelect.innerHTML = '<option value="">Select a time slot</option>'; // Reset
+
+                                const toMinutes = (timeStr) => {
+                                    const [hours, minutes] = timeStr.split(':').map(Number);
+                                    return hours * 60 + minutes;
+                                };
+
+                                const toTimeString = (minutes) => {
+                                    const h = Math.floor(minutes / 60).toString().padStart(2, '0');
+                                    const m = (minutes % 60).toString().padStart(2, '0');
+                                    return `${h}:${m}`;
+                                };
+
+                                const startMins = toMinutes(startTimeStr);
+                                const endMins = toMinutes(endTimeStr);
+
+                                for (let mins = startMins; mins < endMins; mins += 30) {
+                                    const timeStr = toTimeString(mins);
+                                    const formatted = new Date(`1970-01-01T${timeStr}:00`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                    const option = document.createElement("option");
+                                    option.value = timeStr;
+                                    option.textContent = formatted;
+                                    timeSelect.appendChild(option);
+                                }
+                            }
                         })
                     })
 
@@ -450,7 +482,7 @@ async function loadUpcomingAppointments(pcnic){
 
                     if (appointmentForm) {
                         appointmentForm.addEventListener("submit", () => {
-                           // e.preventDefault()
+                            // e.preventDefault()
 
                             // Get form values
                             const date = document.getElementById("appointment-date").value
@@ -759,7 +791,7 @@ async function loadUpcomingAppointments(pcnic){
     });
 
     const rev_select = document.getElementById('review-doctor')
-    rev_select.addEventListener('change', ()=>{
+    rev_select.addEventListener('change', () => {
         console.log("Selected dcnic: ", this.value);
     })
     //rev_select
@@ -787,9 +819,9 @@ async function loadUpcomingAppointments(pcnic){
     })
 })
 function getMonthName(date) {
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
     //const date = new Date(date);
     return months[date.getMonth()];
 }

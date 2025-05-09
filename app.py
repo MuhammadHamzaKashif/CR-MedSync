@@ -4,9 +4,11 @@ from datetime import datetime
 from models import db, Doctor, Patient, Disease, Medicine, Symptom, Staff, Chemical, Report, Prescription, Review, Appointment, Company
 from config import Config
 from sqlalchemy import text
+from routes import bp as api_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.register_blueprint(api_bp)
 db.init_app(app)
 
 with app.app_context():
@@ -173,6 +175,20 @@ def savePrescription():
     db.session.commit()
     return redirect(url_for('doctors'))
 
+@app.route('/doctor/filter_diseases', methods=['POST'])
+def filter_diseases():
+    data = request.get_json()
+    symptom_ids = data.get('symptom_ids', [])
+
+    if not symptom_ids:
+        return jsonify([])
+
+    # SQLAlchemy query to get diseases that match ANY of the symptom_ids
+    diseases = Disease.query.join(Disease.symptoms).filter(Symptom.id.in_(symptom_ids)).distinct().all()
+    
+    return jsonify([{'id': d.id, 'name': d.name} for d in diseases])
+
+
 @app.route('/sendReportId')
 def sendReportId():
     return jsonify(value = session.get('report_id', -1))
@@ -279,10 +295,30 @@ def diseases():
     diseases = Disease.query.all()
     return render_template('diseases.html', diseases=diseases)
 
+
+
 @app.route('/medicines')
 def medicines():
     medicines = Medicine.query.all()
     return render_template('medicines.html', medicines=medicines)
+
+
+@app.route('/get_medicines/<report_id>')
+def get_medicines(report_id):
+    report = Report.query.get(report_id)
+    if not report:
+        return jsonify({"error": "Report not found"}), 404
+
+    disease = Disease.query.get(report.disease_id)
+    if not disease:
+        return jsonify({"error": "Disease not found"}), 404
+
+    chemical_id = disease.chemical_id
+    medicines = Medicine.query.filter_by(chemical_id=chemical_id).all()
+
+    medicine_data = [{"id": med.id, "name": med.name} for med in medicines]
+    return jsonify(medicine_data)
+
 
 @app.route('/symptoms')
 def symptoms():

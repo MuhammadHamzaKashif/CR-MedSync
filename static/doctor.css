@@ -24,7 +24,24 @@
     color: var(--light-text);
     line-height: 1.6;
   }
-  
+.select2-container--default .select2-search--inline .select2-search__field {
+    background:#0e1c2f;
+}
+.select2-container:focus .select2-search:focus .select2-search__field:focus {
+        outline: none;
+    border-color: var(--primary);
+}
+.select2-container--default .select2-selection--multiple {
+    background-color: transparent;
+}
+.select2-container .select2-search--inline .select2-search__field{
+    margin: 0px 0px;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+    color: #0e1c2f;
+}
+
+
   .container {
     width: 100%;
     max-width: 1200px;
